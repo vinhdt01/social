@@ -1,28 +1,43 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn , OneToMany} from 'typeorm';
+import { Post } from './post.entity';
+import { Like } from './like.entity';
+import { Comment } from './comment.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+   
+  @Column()
+  user_id: string;
 
   @Column()
-  firstName: string;
+  fullName: string;
+  
+  @Column()
+  email: string;
+
+   
 
   @Column()
-  lastName: string;
-
-  @Column({ default: true })
-  provider: number;
+  provider: string;
 
   @Column({ default: true })
   avatar: string;
+  
 
-  @Column({ default: true })
-  google_id: string;
+  @Column({ default: 1 })
+  permission: Number;
 
-  @Column({ default: true })
-  permission: string;
-
-  @Column({ default: true })
+  @Column({ default: 1 })
   isActive: boolean;
+
+  @OneToMany(() => Post, post => post.user)
+  posts: Post[];
+
+  @OneToMany(() => Like, like => like.user)
+  likes: Like[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments: Comment[];
+   
 }   

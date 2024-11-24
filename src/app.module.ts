@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module , NestModule , MiddlewareConsumer} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FirebaseAdminService } from '@services/firebase-admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import  { AuthModule } from '@modules/auth/auth.module'
-import { AuthController } from '@controllers/auth.controller'; // Import AuthController
- 
+import  { PostModule } from '@modules/post/post.module'
+
+import { AuthorizationMiddleware } from '@middlewares/authorization.middleware';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -21,9 +23,17 @@ import { AuthController } from '@controllers/auth.controller'; // Import AuthCon
       autoLoadEntities: true,
     }),
     ConfigModule.forRoot(),
-    AuthModule
+    AuthModule,
+    PostModule
   ],
   controllers: [AppController],
   providers: [AppService , FirebaseAdminService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthorizationMiddleware)
+      .exclude('auth/google') // Loại trừ route login
+      .forRoutes('*'); // Áp dụng middleware cho tất cả các route trừ login
+  }
+}
