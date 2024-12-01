@@ -24,12 +24,13 @@ import * as redisStore from 'cache-manager-redis-store';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    CacheModule.register({
-      store: redisStore as unknown as any,
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT, 10),
-      ttl: 200000, // Thời gian sống của cache (giây)
-    }),
+     CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`,
+      ttl: 200000,
+      max: 100,
+    }),  
     ConfigModule.forRoot(),
     AuthModule,
     PostModule,
