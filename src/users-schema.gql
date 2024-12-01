@@ -1,0 +1,46 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Like {
+  id: Int!
+  postId: Int
+  user: User
+  post: Post
+}
+
+type Comment {
+  id: Int!
+  content: String!
+  user: User!
+  post: Post!
+}
+
+type Post {
+  id: Int!
+  title: String!
+  content: String!
+  user: User
+  images: [String!]
+  likes: [Like!]
+  comments: [Comment!]
+}
+
+type User {
+  id: Int!
+  user_id: String!
+  fullName: String!
+  email: String!
+  provider: String!
+  avatar: String
+  permission: Int!
+  isActive: Boolean!
+  posts: [Post!]
+  likes: [Like!]
+  comments: [Comment!]
+}
+
+type Query {
+  users: [User!]!
+  user(id: Int!): User
+}
