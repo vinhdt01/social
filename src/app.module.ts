@@ -1,15 +1,23 @@
-import { Module , NestModule , MiddlewareConsumer , RequestMethod } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FirebaseAdminService } from '@services/firebase-admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import  { AuthModule } from '@modules/auth/auth.module'
-import  { PostModule } from '@modules/post/post.module'
-import { UserModule } from '@modules/user/user.module'
+import { AuthModule } from '@modules/auth/auth.module';
+import { PostModule } from '@modules/post/post.module';
+
+import { UserModule } from '@modules/user/user.module';
 import { AuthorizationMiddleware } from '@middlewares/authorization.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { RabbitMQModule } from '@modules/rabbit/rabbitmq.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -24,29 +32,41 @@ import * as redisStore from 'cache-manager-redis-store';
       synchronize: true,
       autoLoadEntities: true,
     }),
-     CacheModule.register({
+    CacheModule.register({
       isGlobal: true,
       store: redisStore,
       url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`,
       ttl: 200000,
       max: 100,
-    }),  
+    }),
+    ClientsModule.register([
+      {
+        name: 'RABBITMQ_CLIENT',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'], // RabbitMQ connection URL
+          queue: 'default_queue',
+          queueOptions: { durable: true }
+        }
+      }
+    ]),
     ConfigModule.forRoot(),
     AuthModule,
     PostModule,
-    UserModule
+    UserModule,
+    RabbitMQModule,
   ],
   controllers: [AppController],
-  providers: [AppService , FirebaseAdminService ],
+  providers: [AppService, FirebaseAdminService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthorizationMiddleware)
-      .exclude(
-        { path: 'auth/(.*)', method: RequestMethod.ALL }, // Loại trừ tất cả GET bắt đầu bằng /auth/
-        { path: 'public', method: RequestMethod.ALL },    // Loại trừ tất cả các phương thức của /public
-      )
-      .forRoutes('*');  
+    consumer.apply(AuthorizationMiddleware);
+    // .exclude(
+    //   { path: 'auth/(.*)', method: RequestMethod.ALL }, // Loại trừ tất cả GET bắt đầu bằng /auth/
+    //   { path: 'public', method: RequestMethod.ALL },    // Loại trừ tất cả các phương thức của /public
+    //   { path: 'graphql/users', method: RequestMethod.ALL },
+    // )
+    // .forRoutes('*');
   }
 }

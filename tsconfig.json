@@ -24,7 +24,7 @@
       "@modules/*": ["src/modules/*"],
       "@middlewares/*": ["src/middlewares/*"], 
       "@interfaces/*": ["src/interfaces/*"], 
-
+      "@config/*": ["src/config/*"], 
     }
   }
 }
