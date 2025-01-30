@@ -45,8 +45,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest .
-
+        run: |
+         docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest .
+         echo "Docker Hub Username: ${{ env.DOCKER_HUB_USERNAME }}"
+         echo "Repository Name: ${{ env.REPO_NAME }}"
+         
       - name: Push Docker image
         run: docker push ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest
 
