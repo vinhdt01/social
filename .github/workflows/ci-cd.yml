@@ -46,12 +46,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          echo "Docker Hub Username: ${{ env.DOCKER_HUB_USERNAME }}"
-          echo "Repository Name: ${{ env.REPO_NAME }}"
-          docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest .
+          echo "Docker Hub Username: ${{ secrets.DOCKER_HUB_USERNAME }}"
+          echo "Repository Name: ${{ secrets.REPO_NAME }}"
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPO_NAME }}:latest .
 
       - name: Push Docker image
-        run: docker push ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPO_NAME }}:latest
 
   # deploy:
   #   needs: docker-build
