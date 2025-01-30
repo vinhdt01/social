@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+ name: CI/CD Pipeline
 
 on:
   push:
@@ -46,10 +46,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-         docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest .
-         echo "Docker Hub Username: ${{ env.DOCKER_HUB_USERNAME }}"
-         echo "Repository Name: ${{ env.REPO_NAME }}"
-         
+          echo "Docker Hub Username: ${{ env.DOCKER_HUB_USERNAME }}"
+          echo "Repository Name: ${{ env.REPO_NAME }}"
+          docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest .
+
       - name: Push Docker image
         run: docker push ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest
 
