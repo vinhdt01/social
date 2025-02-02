@@ -53,16 +53,13 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPO_NAME }}:latest
 
-  # deploy:
-  #   needs: docker-build
-  #   runs-on: ubuntu-latest
+      - name: Set up Kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-
-  #     - name: Deploy to server
-  #       run: |
-  #         ssh user@your-server-ip 'docker pull ${{ env.DOCKER_HUB_USERNAME }}/${{ env.REPO_NAME }}:latest'
-  #         ssh user@your-server-ip 'docker-compose down'
-  #         ssh user@your-server-ip 'docker-compose up -d'
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl rollout status deployment/nestjs-app
+          kubectl get services
