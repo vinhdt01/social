@@ -53,13 +53,13 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPO_NAME }}:latest
 
-      - name: Set up Kubectl
+      - name: Create kubeconfig file
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      - name: Deploy to Kubernetes
+      - name: Set up kubectl
         run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl rollout status deployment/nestjs-app
-          kubectl get services
+          kubectl config view
+          kubectl get nodes
