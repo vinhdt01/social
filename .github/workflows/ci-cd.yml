@@ -73,6 +73,13 @@ jobs:
           export_default_credentials: true
           install_components: "gke-gcloud-auth-plugin"
 
+      # Bổ sung bước thiết lập active account
+      - name: Set active gcloud account
+        run: |
+          ACTIVE_ACCOUNT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
+          echo "Active account: $ACTIVE_ACCOUNT"
+          gcloud config set account $ACTIVE_ACCOUNT
+
       - name: Create kubeconfig file
         run: |
           mkdir -p $HOME/.kube
