@@ -72,6 +72,11 @@ jobs:
           export_default_credentials: true
           install_components: "gke-gcloud-auth-plugin"
 
+      - name: Verify gke-gcloud-auth-plugin
+        run: |
+          gcloud components list | grep gke-gcloud-auth-plugin
+          gke-gcloud-auth-plugin --version
+
       - name: Create kubeconfig file
         run: |
           mkdir -p $HOME/.kube
