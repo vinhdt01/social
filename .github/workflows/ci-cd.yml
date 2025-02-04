@@ -88,5 +88,5 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yaml
-          kubectl rollout status deployment/nestjs-app
+          kubectl rollout status deployment/social-app
           kubectl get services
